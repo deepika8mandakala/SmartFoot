@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Web Page Layout</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #4bd071 0%, #43ea7a 100%);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(90deg, #2e7d32 0%, #43a047 100%);
+      color: white;
+      padding: 10px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo img {
+      height: 60px;
+      width: 60px;
+      border-radius: 50%;
+    }
+    .nav-buttons a {
+      color: white;
+      margin-left: 25px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .nav-buttons a:hover {
+      text-decoration: underline;
+    }
+
+    /* Main Section */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      padding: 2rem;
+    }
+    .container {
+      background-color: rgba(255, 255, 255, 0.85);
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    .container i {
+      font-size: 36px;
+      margin-bottom: 10px;
+      color: #;
+    }
+    .container h2 {
+      margin-bottom: 0.5rem;
+      font-size: 1.4rem;
+      color: #333;
+    }
+    .container p {
+      font-size: 0.95rem;
+      color: #444;
+    }
+
+    footer {
+      background: linear-gradient(90deg, #2e7d32 0%, #43a047 100%);
+      color: white;
+      padding: 15px 30px;
+      text-align: center;
+      font-size: 14px;
+    }
+    footer a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+    footer i {
+      margin-right: 6px;
+      font-size: 16px;
+      vertical-align: middle;
+    }
+    footer p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <img src="smart-foot.png" alt="Logo" />
+    </div>
+    <div class="nav-buttons">
+      <a href="#">Home</a>
+      <a href="#">Dashboard</a>
+      <a href="#">About Us</a>
+    </div>
+  </header>
+
+  <!-- Body Containers -->
+  <main>
+    <div class="container">
+      <i class="fas fa-map-marked-alt"></i>
+      <h2>Safe Route Planner</h2>
+      <p>Plan your travel routes with safety indicators, navigation aid, and real-time data overlays.</p>
+    </div>
+    <div class="container">
+      <i class="fas fa-walking"></i>
+      <h2>Live Walkability Scores</h2>
+      <p>Check how walkable your current area is with updated local and environmental data.</p>
+    </div>
+    <div class="container">
+      <i class="fas fa-list"></i>
+      <h2>Feedback & Ratings</h2>
+      <p>Users rate and review walking routes to improve path quality and suggestions.</p>
+    </div>
+    <div class="container">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h2>Report Issues</h2>
+      <p>Report accidents, hazards, potholes or unsafe zones directly through the app interface.</p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+  <i class="fas fa-phone"></i> Contact Info |
+  <a href="#"><i class="fab fa-facebook"></i> Social Links</a> |
+  <a href="#"><i class="fas fa-lock"></i> Privacy Policy</a> |
+  <a href="#"><i class="fas fa-file-alt"></i> Terms</a>
+</footer>
+
+</body>
+</html>
