@@ -26,10 +26,20 @@
       justify-content: space-between;
       align-items: center;
     }
-    .logo img {
-      height: 50px;
-      width: 50px;
+     .logo-title {
+      display: flex;
+      align-items: center;
+    }
+    .logo-title img {
+      height: 60px;
+      width: 60px;
       border-radius: 50%;
+      margin-right: 15px;
+    }
+    .title {
+      font-size: 22px;
+      font-weight: 600;
+      color: white;
     }
     .nav-buttons a {
       color: white;
@@ -118,7 +128,7 @@
   padding: 30px;
   border-radius: 12px;
   text-align: center;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 8px 20px rgba(161, 244, 136, 0.3);
   animation: scaleIn 0.4s ease-out;
 }
 
@@ -171,8 +181,9 @@
 
   <!-- Header -->
   <header>
-    <div class="logo">
-      <img src="smart-foot.png" alt="SmartFoot" />
+    <div class="logo-title">
+      <img src="smart-foot.png" alt="SmartFoot Logo" />
+      <span class="title">SmartFoot</span>
     </div>
     <div class="nav-buttons">
       <a href="login.html">Home</a>
@@ -238,9 +249,10 @@
 
   <!-- Footer -->
   <footer>
-    <a href="#">Privacy Policy</a> |
-    <a href="#">Terms</a> |
-    <a href="#">Contact</a>
+    <p><i class="fas fa-phone"></i> Contact Info |
+    <a href="#"><i class="fab fa-facebook"></i> Social Links</a> |
+    <a href="#"><i class="fas fa-lock"></i> Privacy Policy</a> |
+    <a href="#"><i class="fas fa-file-alt"></i> Terms</a></p>
   </footer>
 
 </body>

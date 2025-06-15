@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>SmartFoot - Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
     * {
       margin: 0;
@@ -29,10 +30,20 @@
       color: white;
     }
 
-    nav .logo img {
+    .logo-title {
+      display: flex;
+      align-items: center;
+    }
+    .logo-title img {
       height: 60px;
       width: 60px;
       border-radius: 50%;
+      margin-right: 15px;
+    }
+    .title {
+      font-size: 22px;
+      font-weight: 600;
+      color: white;
     }
 
     nav .nav-links a {
@@ -134,8 +145,9 @@
 
   <!-- Navigation -->
   <nav>
-    <div class="logo">
-      <img src="smart-foot.png" alt="SmartFoot Logo">
+    <div class="logo-title">
+      <img src="smart-foot.png" alt="SmartFoot Logo" />
+      <span class="title">SmartFoot</span>
     </div>
     <div class="nav-links">
       <a href="#">Home</a>
@@ -160,10 +172,10 @@
 
   <!-- Footer -->
   <footer>
-    Contact Info | 
-    <a href="#">Social Links</a> | 
-    <a href="#">Privacy Policy</a> | 
-    <a href="#">Terms</a>
+    <p><i class="fas fa-phone"></i> Contact Info |
+    <a href="#"><i class="fab fa-facebook"></i> Social Links</a> |
+    <a href="#"><i class="fas fa-lock"></i> Privacy Policy</a> |
+    <a href="#"><i class="fas fa-file-alt"></i> Terms</a></p>
   </footer>
 
 </body>
