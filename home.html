@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Web Page Layout</title>
+  <title>SmartFoot | Walkability Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
     * {
       margin: 0;
@@ -14,18 +15,20 @@
     }
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #4bd071 0%, #43ea7a 100%);
+      background: url('https://images.unsplash.com/photo-1602784877446-b9f87ed7f4c2?auto=format&fit=crop&w=1400&q=80') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
     }
-    header {
-      background: linear-gradient(90deg, #2e7d32 0%, #43a047 100%);
+    header, footer {
+      background: linear-gradient(90deg, #2e7d32 0%, #1b5e20 100%);
       color: white;
-      padding: 10px 30px;
+      padding: 12px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      backdrop-filter: blur(6px);
     }
     .logo img {
       height: 60px;
@@ -42,42 +45,48 @@
       text-decoration: underline;
     }
 
-    /* Main Section */
     main {
-      flex: 1;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      padding: 2rem;
+      gap: 40px;
+      padding: 60px;
     }
-    .container {
-      background-color: rgba(255, 255, 255, 0.85);
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    .card {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 18px;
+      padding:20px;
       text-align: center;
+      color: #008000;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
     }
-    .container i {
-      font-size: 36px;
-      margin-bottom: 10px;
-      color: #;
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 25px rgba(34, 139, 34, 0.6);
     }
-    .container h2 {
-      margin-bottom: 0.5rem;
-      font-size: 1.4rem;
-      color: #333;
+    .card i {
+      font-size: 45px;
+      margin-bottom: 15px;
+      color: #246111;
     }
-    .container p {
+    .card h2 {
+      margin-bottom: 12px;
+      font-size: 1.5rem;
+    }
+    .card p {
       font-size: 0.95rem;
-      color: #444;
+      color: #2ec166;
     }
 
     footer {
-      background: linear-gradient(90deg, #2e7d32 0%, #43a047 100%);
-      color: white;
-      padding: 15px 30px;
-      text-align: center;
+      margin-top: auto;
       font-size: 14px;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
     }
     footer a {
       color: white;
@@ -87,61 +96,56 @@
     footer a:hover {
       text-decoration: underline;
     }
-    footer i {
-      margin-right: 6px;
-      font-size: 16px;
-      vertical-align: middle;
-    }
-    footer p {
-      margin: 5px 0;
-    }
   </style>
 </head>
+
 <body>
 
   <!-- Header -->
   <header>
     <div class="logo">
-      <img src="smart-foot.png" alt="Logo" />
+      <img src="smart-foot.png" alt="SmartFoot Logo" />
     </div>
     <div class="nav-buttons">
-      <a href="#">Home</a>
-      <a href="#">Dashboard</a>
-      <a href="#">About Us</a>
-    </div>
+  <a href="#" onclick="location.href='login.html'">Home</a>
+  <a href="#" onclick="location.href='about.html'">About Us</a>
+</div>
   </header>
 
-  <!-- Body Containers -->
+  <!-- Cards Section -->
   <main>
-    <div class="container">
+    <div class="card" onclick="location.href='safe-route.html'">
       <i class="fas fa-map-marked-alt"></i>
       <h2>Safe Route Planner</h2>
-      <p>Plan your travel routes with safety indicators, navigation aid, and real-time data overlays.</p>
+      <p>Navigate safe routes with hazard alerts and real-time area safety data.</p>
     </div>
-    <div class="container">
+
+    <div class="card" onclick="location.href='templates\\walkability.html'">
       <i class="fas fa-walking"></i>
       <h2>Live Walkability Scores</h2>
-      <p>Check how walkable your current area is with updated local and environmental data.</p>
+      <p>Check area walkability using green cover, lighting, and footpath safety.</p>
     </div>
-    <div class="container">
-      <i class="fas fa-list"></i>
+
+    <div class="card" onclick="location.href='feedback.html'">
+      <i class="fas fa-thumbs-up"></i>
       <h2>Feedback & Ratings</h2>
-      <p>Users rate and review walking routes to improve path quality and suggestions.</p>
+      <p>Help improve paths by rating routes and submitting safety reviews.</p>
     </div>
-    <div class="container">
+
+    <div class="card" onclick="location.href='report-issues.html'">
       <i class="fas fa-exclamation-triangle"></i>
       <h2>Report Issues</h2>
-      <p>Report accidents, hazards, potholes or unsafe zones directly through the app interface.</p>
+      <p>Spot hazards like potholes or broken lights? Report instantly.</p>
     </div>
   </main>
 
   <!-- Footer -->
   <footer>
-  <i class="fas fa-phone"></i> Contact Info |
-  <a href="#"><i class="fab fa-facebook"></i> Social Links</a> |
-  <a href="#"><i class="fas fa-lock"></i> Privacy Policy</a> |
-  <a href="#"><i class="fas fa-file-alt"></i> Terms</a>
-</footer>
+    <p><i class="fas fa-phone"></i> Contact Info |
+    <a href="#"><i class="fab fa-facebook"></i> Social Links</a> |
+    <a href="#"><i class="fas fa-lock"></i> Privacy Policy</a> |
+    <a href="#"><i class="fas fa-file-alt"></i> Terms</a></p>
+  </footer>
 
 </body>
 </html>

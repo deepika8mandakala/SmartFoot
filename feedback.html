@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Feedback | SmartFoot</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e0f7ec, #c8facc);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header, footer {
+      background: linear-gradient(90deg, #2e7d32, #43a047);
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo img {
+      height: 50px;
+      width: 50px;
+      border-radius: 50%;
+    }
+    .nav-buttons a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+    }
+    .nav-buttons a:hover {
+      text-decoration: underline;
+    }
+    main {
+      flex: 1;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    .form-section, .reviews-section {
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .form-section h2, .reviews-section h2 {
+      margin-bottom: 1rem;
+      color: #2e7d32;
+    }
+    form label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+    form input, form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    form button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    form button:hover {
+      background-color: #388e3c;
+    }
+
+    .review {
+      border-top: 1px solid #ddd;
+      padding-top: 1rem;
+      margin-top: 1rem;
+    }
+    .stars {
+      color: #ffb400;
+    }
+    .popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      display: none;
+    }
+    .popup-content {
+      background: #2e7d32;
+      color: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      animation: scaleIn 0.4s ease-out;
+    }
+    .popup-content i {
+      font-size: 40px;
+      margin-bottom: 10px;
+      color: #a5f1b4;
+    }
+    .popup-content button {
+      background-color: white;
+      color: #2e7d32;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    @keyframes scaleIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    footer {
+      text-align: center;
+      font-size: 14px;
+    }
+    footer a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+      text-align: center;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><img src="smart-foot.png" alt="SmartFoot Logo"/></div>
+  <div class="nav-buttons">
+    <a href="login.html">Home</a>
+    <a href="home.html">Dashboard</a>
+    <a href="about.html">About Us</a>
+  </div>
+</header>
+
+<main>
+  <div class="form-section">
+    <h2>Submit Feedback</h2>
+    <form id="feedbackForm">
+      <input type="text" name="name" placeholder="Your Name" required>
+      <textarea name="message" placeholder="Your Feedback" required></textarea>
+      <button type="submit">Submit Feedback</button>
+    </form>
+  </div>
+
+  <!-- Thank You Popup -->
+  <div id="thankYouPopup" class="popup">
+    <div class="popup-content">
+      <i class="fas fa-check-circle"></i>
+      <h3>Thank you for your feedback!</h3>
+      <p>Your feedback helps us build safer and smarter walkable spaces.</p>
+      <button onclick="closePopup()">Close</button>
+    </div>
+  </div>
+
+  <div class="reviews-section">
+    <h2>User Reviews</h2>
+    <div class="review">
+      <div class="stars"><h3>Rahul</h3>⭐⭐⭐⭐⭐</div>
+      <p>"Very helpful app for finding safe and shaded walking routes!"</p>
+    </div>
+    <div class="review">
+      <div class="stars"><h3>Divya</h3>⭐⭐⭐⭐</div>
+      <p>"The feedback feature is smooth. Great UI and fast response!"</p>
+    </div>
+    <div class="review">
+      <div class="stars"><h3>Virat</h3>⭐⭐⭐⭐⭐</div>
+      <p>"Helped me avoid unsafe roads at night. Loved the live scores."</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p><i class="fas fa-phone"></i> Contact Info |
+    <a href="#"><i class="fab fa-facebook"></i> Social</a> |
+    <a href="#"><i class="fas fa-lock"></i> Privacy Policy</a> |
+    <a href="#"><i class="fas fa-file-alt"></i> Terms</a></p>
+</footer>
+
+<script>
+  const form = document.getElementById('feedbackForm');
+
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const formData = new FormData(form);
+    const data = {
+      name: formData.get("name"),
+      message: formData.get("message")
+    };
+
+    // Uncomment to connect with backend
+    /*
+    fetch('/submit-feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(res => res.json())
+      .then(response => console.log('Submitted:', response))
+      .catch(error => console.error('Error:', error));
+    */
+
+    document.getElementById('thankYouPopup').style.display = 'flex';
+  });
+
+  function closePopup() {
+    document.getElementById('thankYouPopup').style.display = 'none';
+    form.reset();
+  }
+</script>
+
+</body>
+</html>
