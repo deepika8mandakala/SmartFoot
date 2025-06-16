@@ -31,6 +31,6 @@ extended_df = pd.DataFrame(extended_routes)
 
 # Save to CSV
 csv_extended_path = "data/safety_scores_full.csv"  # ✅ This path is correct for your Flask app
-extended_df.to_csv(csv_extended_path, index=False)
+extended_df.to_csv(csv_extended_path, index=False, quoting=1)  # quoting=1 means QUOTE_NONNUMERIC
 
 print("CSV saved to:", csv_extended_path)

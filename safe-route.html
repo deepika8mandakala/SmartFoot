@@ -2,11 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Permissions-Policy" content="accelerometer=(self)">
   <title>Safe Route Planner | SmartFoot</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
+    #street-view {
+  height: 400px;
+  width: 100%;
+  margin-top: 30px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  display: none; /* Ensure it starts hidden */
+}
+
+.street-view-active #street-view {
+  display: block; /* Show when active */
+}
     * {
       margin: 0; padding: 0;
       box-sizing: border-box;
@@ -26,6 +40,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
     }
     .logo img {
       height: 50px;
@@ -36,6 +51,8 @@
       color: white;
       margin-left: 20px;
       text-decoration: none;
+      font-weight: 600;
+      transition: text-decoration 0.2s ease-in-out;
     }
     .nav-buttons a:hover {
       text-decoration: underline;
@@ -46,45 +63,66 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
     }
     .card {
       background: white;
       padding: 20px 30px;
       border-radius: 12px;
-      width: 90%;
-      max-width: 800px;
+      width: 100%;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-sizing: border-box;
     }
     .card h2 {
       color: #2e7d32;
       text-align: center;
       margin-bottom: 1rem;
+      font-weight: 700;
     }
     .input-group {
       display: flex;
       gap: 10px;
       margin-bottom: 1rem;
+      flex-wrap: wrap;
     }
     .input-group input {
       flex: 1;
+      min-width: 200px;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    .input-group input:focus {
+      outline: none;
+      border-color: #43a047;
+      box-shadow: 0 0 5px #a5d6a7;
     }
     .btn {
       padding: 10px 20px;
       background: #43a047;
       color: white;
-      font-weight: bold;
+      font-weight: 700;
       border: none;
       border-radius: 8px;
       cursor: pointer;
+      transition: background 0.3s;
+      min-width: 120px;
+      flex-shrink: 0;
     }
-    .btn:hover {
+    .btn:hover:not(:disabled) {
       background: #388e3c;
+    }
+    .btn:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
     }
     #routesList {
       margin-top: 20px;
+      width: 100%;
     }
     .route-option {
       background: #e8f5e9;
@@ -92,6 +130,15 @@
       margin-bottom: 10px;
       border-radius: 8px;
       border: 1px solid #c8e6c9;
+      box-sizing: border-box;
+    }
+    .route-option h3 {
+      color: #2e7d32;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .route-option p {
+      margin: 4px 0;
     }
     .route-option button {
       margin-top: 10px;
@@ -101,42 +148,139 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      transition: background 0.3s;
+      font-weight: 600;
+    }
+    .route-option button:hover {
+      background: #1b5e20;
     }
     #map {
       height: 400px;
       width: 100%;
       margin-top: 30px;
       border-radius: 12px;
+      border: 1px solid #ddd;
+      box-sizing: border-box;
+    }
+    #street-view {
+      height: 400px;
+      width: 100%;
+      margin-top: 30px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      box-sizing: border-box;
+    }
+    .street-view-controls {
+      display: flex;
+      gap: 10px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+    .street-view-controls select {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
     footer {
       background: #2e7d32;
       color: white;
       text-align: center;
       padding: 15px;
+      margin-top: auto;
+      font-weight: 600;
+    }
+    .error {
+      color: #d32f2f;
+      padding: 10px;
+      background: #ffebee;
+      border-radius: 4px;
+      margin-top: 10px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .loading-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      color: #2e7d32;
+      font-weight: 600;
+    }
+    @media (max-width: 600px) {
+      .input-group {
+        flex-direction: column;
+      }
+      .input-group input, .btn {
+        width: 100%;
+      }
+      header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+      }
+      .nav-buttons {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+      }
+      .nav-buttons a {
+        margin-left: 0;
+      }
+      main {
+        padding: 1rem;
+      }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="logo"><img src="smart-foot.png" alt="SmartFoot Logo" /></div>
-    <div class="nav-buttons">
+    <nav class="nav-buttons">
       <a href="login.html">Home</a>
       <a href="home.html">Dashboard</a>
       <a href="about.html">About Us</a>
-    </div>
+    </nav>
   </header>
 
   <main>
-    <div class="card">
-      <h2><i class="fas fa-route"></i> Safe Route Finder</h2>
+    <section class="card" aria-label="Safe Route Finder">
+      <h2><i class="fas fa-route" aria-hidden="true"></i> Safe Route Finder</h2>
       <div class="input-group">
-        <input type="text" id="from" placeholder="From Location (e.g. Siripuram)" required>
-        <input type="text" id="to" placeholder="To Location (e.g. Beach Road)" required>
-        <button class="btn" onclick="findRoutes()">Find Routes</button>
+        <input type="text" id="from" placeholder="From Location (e.g. Siripuram)" aria-label="From Location" required />
+        <input type="text" id="to" placeholder="To Location (e.g. Beach Road)" aria-label="To Location" required />
+        <button class="btn" id="findRoutesBtn" onclick="findRoutes()">Find Routes</button>
       </div>
-      <div id="routesList"></div>
-    </div>
-    <div id="map"></div>
+      <div id="routesList" aria-live="polite"></div>
+    </section>
+    <div id="map" role="region" aria-label="Map showing routes"></div>
+    <div id="street-view" role="region" aria-label="Street View of selected route"></div>
+   <div class="street-view-controls">
+  <button class="btn" id="start-tour" onclick="startStreetViewTour()">Start Street View Tour</button>
+  <button class="btn" id="stop-tour" onclick="stopStreetViewTour()">Stop Tour</button>
+  <span>Speed: </span>
+  <select id="tour-speed">
+    <option value="3000">Slow</option>
+    <option value="2000" selected>Normal</option>
+    <option value="1000">Fast</option>
+  </select>
+</div>
+    <div id="status" class="status">Ready to calculate route</div>
   </main>
 
   <footer>
@@ -144,73 +288,538 @@
   </footer>
 
   <script>
-    let map, directionsService, directionsRenderer;
-
-    function initMap() {
-      map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 17.6868, lng: 83.2185 },
-        zoom: 13,
-      });
-      directionsService = new google.maps.DirectionsService();
-      directionsRenderer = new google.maps.DirectionsRenderer({ map });
-    }
-
-    function findRoutes() {
-      const from = document.getElementById("from").value.trim();
-      const to = document.getElementById("to").value.trim();
-      const routesList = document.getElementById("routesList");
-
-      if (!from || !to) {
-        alert("Please enter both From and To locations.");
-        return;
+    let map, directionsService;
+    const directionsRenderers = [];
+    let mapLoaded = false;
+    let autocompleteFrom, autocompleteTo;
+    let panorama, svService;
+    let tourInterval;
+    let currentStep = 0;
+    let routePaths = [];
+    let currentRouteIndex = -1;
+function isDirectionsServiceReady() {
+  return directionsService && google.maps.DirectionsStatus;
+}
+    const testLocations = [
+      {
+        from: "Daba Gardens, Visakhapatnam",
+        to: "Rama Krishna Beach, Visakhapatnam",
+        waypoints: "Town Kotha Road"
+      },
+      {
+        from: "Gajuwaka, Visakhapatnam",
+        to: "Rushikonda Beach, Visakhapatnam",
+        waypoints: "Madhurawada"
       }
+    ];
 
-      fetch("/api/get-safety-scores", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ from, to }),
-      })
-      .then(res => {
-        if (!res.ok) throw new Error("Request failed");
-        return res.json();
-      })
-      .then(data => {
-        routesList.innerHTML = "";
-        if (data.length === 0) {
-          routesList.innerHTML = "<p>No routes found between these points.</p>";
-          return;
-        }
-        data.forEach(route => {
-          const div = document.createElement("div");
-          div.className = "route-option";
-          div.innerHTML = `
-            <strong>${route.summary}</strong><br>
-            Safety Score: ${route.safetyScore}%<br>
-            <button onclick="showRoute('${from}', '${to}')">Start</button>
-          `;
-          routesList.appendChild(div);
-        });
-      })
-      .catch(err => {
-        console.error("Fetch error:", err);
-        routesList.innerHTML = "<p>Error fetching routes.</p>";
+
+    // Initialize Google Maps & Places Autocomplete
+    // Enhance your initMap function with better initialization checks
+ function initMap() {
+  map = new google.maps.Map(document.getElementById("map"), {
+    center: { lat: 17.6868, lng: 83.2185 },
+    zoom: 13,
+  });
+  
+  directionsService = new google.maps.DirectionsService();
+  svService = new google.maps.StreetViewService();
+  
+  // Initialize Street View with proper options
+  panorama = new google.maps.StreetViewPanorama(
+  document.getElementById('street-view'), {
+    position: { lat: 17.6868, lng: 83.2185 },
+    pov: { heading: 0, pitch: 0 },
+    motionTracking: false,
+    disableDefaultUI: false, // Keep some controls
+    linksControl: true, // Allow navigation between panoramas
+    visible: true // Make it visible
+  });
+  panorama.addListener('status_changed', () => {
+  console.log('Street View status:', panorama.getStatus());
+});
+
+panorama.addListener('pano_changed', () => {
+  console.log('Current pano:', panorama.getPano());
+});
+
+  // Remove duplicate event listeners
+  document.getElementById('start-tour').onclick = startStreetViewTour;
+  document.getElementById('stop-tour').onclick = stopStreetViewTour;
+
+  mapLoaded = true;
+
+  autocompleteFrom = new google.maps.places.Autocomplete(
+    document.getElementById("from"),
+    { types: ['geocode'], componentRestrictions: {country: 'in'} }
+  );
+  
+  autocompleteTo = new google.maps.places.Autocomplete(
+    document.getElementById("to"),
+    { types: ['geocode'], componentRestrictions: {country: 'in'} }
+  );
+}
+    // Clear previous displayed routes from map and UI
+    function clearRoutes() {
+      directionsRenderers.forEach(renderer => {
+        renderer.setMap(null);
+        renderer.setDirections(null);
       });
+      directionsRenderers.length = 0;
+      document.getElementById("routesList").innerHTML = "";
+      stopStreetViewTour();
+      routePaths = [];
+      currentRouteIndex = -1;
     }
 
-    function showRoute(from, to) {
+    // Show error message in routes list area
+    function showError(message) {
+      const routesList = document.getElementById("routesList");
+      routesList.innerHTML = `<div class="error" role="alert"><i class="fas fa-exclamation-circle" aria-hidden="true"></i> ${message}</div>`;
+    }
+
+    // Display a route on the map
+ // Enhance your displayRouteOnMap function
+function displayRouteOnMap(route, index) {
+  if (!mapLoaded) {
+    showError("Map is not loaded yet. Please try again later.");
+    return;
+  }
+
+  console.log(`Displaying route ${index}`, route); // Debug log
+
+  const colors = ["#035b16", "#1141ff", "#b209a4", "#f1d51a"];
+
+  // Clear old renderers for this index
+  if (directionsRenderers[index]) {
+    directionsRenderers[index].setMap(null);
+  }
+
+  try {
+    const routeRenderer = new google.maps.DirectionsRenderer({
+      map: map,
+      suppressMarkers: false,
+      polylineOptions: {
+        strokeColor: colors[index % colors.length],
+        strokeWeight: 6,
+        strokeOpacity: 0.8,
+      },
+      markerOptions: {
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 8,
+          fillColor: colors[index % colors.length],
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: 'white',
+        }
+      }
+    });
+
+    // Verify route data
+    if (!route.routeObject) {
+      throw new Error(`Route ${index} has no routeObject`);
+    }
+
+    // Create a complete DirectionsResult object
+    const directionsResult = {
+      routes: [route.routeObject],
+      request: {
+        origin: route.routeObject.legs[0].start_address,
+        destination: route.routeObject.legs[0].end_address,
+        travelMode: google.maps.TravelMode.WALKING
+      },
+      geocoded_waypoints: []
+    };
+
+    routeRenderer.setDirections(directionsResult);
+    directionsRenderers[index] = routeRenderer;
+    extractRoutePath(route.routeObject, index);
+    
+    // Debug log
+    console.log(`Route ${index} rendered successfully`);
+  } catch (error) {
+    console.error(`Error rendering route ${index}:`, error);
+    showError(`Failed to display route ${index + 1}`);
+  }
+}
+    // Extract path coordinates for Street View tour
+    
+    // Add route details and UI for each route option
+    function addRouteToUI(route, index) {
+  const routesList = document.getElementById("routesList");
+  const div = document.createElement("div");
+  div.className = "route-option";
+  div.innerHTML = `
+    <h3>Option ${index + 1}: ${route.summary || 'Route'}</h3>
+    <p><strong>From:</strong> ${route.from_location}</p>
+    <p><strong>To:</strong> ${route.to_location}</p>
+    <p><strong>Safety Score:</strong> ${route.safetyScore}%</p>
+    ${route.distance ? `<p><strong>Distance:</strong> ${route.distance}</p>` : ''}
+    ${route.duration ? `<p><strong>Duration:</strong> ${route.duration}</p>` : ''}
+    ${route.waypoints ? `<p><strong>Waypoints:</strong> ${route.waypoints}</p>` : ''}
+    <button type="button" onclick="focusRoute(${index})" aria-label="Focus on route option ${index + 1}">
+      <i class="fas fa-map-marker-alt"></i> Focus This Route
+    </button>
+    <button type="button" onclick="currentRouteIndex = ${index}; startStreetViewTour()" aria-label="Start Street View tour for route option ${index + 1}" style="margin-left: 10px;">
+      <i class="fas fa-street-view"></i> Street View Tour
+    </button>
+  `;
+  routesList.appendChild(div);
+}
+
+    // Focus on a particular route on the map by index
+    function focusRoute(index) {
+      directionsRenderers.forEach((renderer, i) => {
+        renderer.setMap(i === index ? map : null);
+      });
+
+      if (directionsRenderers[index]) {
+        const bounds = new google.maps.LatLngBounds();
+        const directions = directionsRenderers[index].getDirections();
+
+        directions.routes[0].legs.forEach(leg => {
+          bounds.extend(leg.start_location);
+          bounds.extend(leg.end_location);
+        });
+
+        map.fitBounds(bounds);
+      }
+    }
+
+    // Start the Street View tour for a specific route
+   
+
+   
+
+   function stopStreetViewTour() {
+  if (tourInterval) {
+    clearInterval(tourInterval);
+    tourInterval = null;
+  }
+  document.body.classList.remove('street-view-active');
+  document.getElementById('street-view').style.display = 'none';
+  updateStatus("Tour stopped");
+  currentStep = 0;
+}
+
+    function updateStatus(message) {
+      document.getElementById('status').textContent = message;
+    }
+
+    // Main function to find routes from user inputs
+async function findRoutes() {
+  try {
+    if (!isDirectionsServiceReady()) {
+      showError("Directions service is not ready. Please try again later.");
+      return;
+    }
+
+    const from = document.getElementById("from").value.trim();
+    const to = document.getElementById("to").value.trim();
+    
+    if (!from || !to) {
+      showError("Please enter both From and To locations.");
+      return;
+    }
+
+    const fromPlace = autocompleteFrom.getPlace();
+    const toPlace = autocompleteTo.getPlace();
+    
+    if (!fromPlace || !toPlace || !fromPlace.geometry || !toPlace.geometry) {
+      showError("Please select valid locations from the suggestions");
+      return;
+    }
+
+    clearRoutes();
+    document.getElementById("routesList").innerHTML = `<div class="loading-container"><div class="loading"></div><span>Finding safe routes...</span></div>`;
+    document.getElementById("findRoutesBtn").disabled = true;
+
+    const routes = await getDirections(fromPlace, toPlace);
+    
+    if (routes && routes.length > 0) {
+      document.getElementById("routesList").innerHTML = "";
+      routes.forEach((route, index) => {
+        displayRouteOnMap(route, index);
+        addRouteToUI(route, index);
+      });
+    } else {
+      showError("No routes found between these locations");
+    }
+  } catch (error) {
+    showError(error.message);
+  } finally {
+    document.getElementById("findRoutesBtn").disabled = false;
+  }
+}
+  // Enhance your getDirections function
+async function getDirections(fromPlace, toPlace) {
+  return new Promise((resolve, reject) => {
+    const request = {
+      origin: fromPlace.geometry.location,
+      destination: toPlace.geometry.location,
+      travelMode: google.maps.TravelMode.WALKING,
+      provideRouteAlternatives: true
+    };
+
+    directionsService.route(request, (response, status) => {
+      if (status === 'OK') {
+        const routes = response.routes.map((route, index) => ({
+          from_location: fromPlace.formatted_address,
+          to_location: toPlace.formatted_address,
+          summary: `Route ${index + 1}`,
+          safetyScore: calculateSafetyScore(route),
+          distance: route.legs[0].distance.text,
+          duration: route.legs[0].duration.text,
+          waypoints: getWaypoints(route),
+          routeObject: route
+        }));
+        resolve(routes);
+      } else {
+        reject(new Error('Directions request failed: ' + status));
+      }
+    });
+  });
+}
+
+// Example safety score calculation - replace with your actual logic
+function calculateSafetyScore(route) {
+  // Implement actual safety factors:
+  const factors = {
+    sidewalkCoverage: 0.4,
+    lighting: 0.3,
+    crimeData: 0.2,
+    pedestrianVolume: 0.1
+  };
+  
+  // Calculate based on actual route properties
+  let score = 0;
+  // Add real calculations here...
+  
+  return Math.min(100, Math.max(0, Math.round(score)));
+}
+// Extract waypoints from route
+function getWaypoints(route) {
+  if (!route.legs[0].via_waypoint || route.legs[0].via_waypoint.length === 0) {
+    return "None";
+  }
+  return route.legs[0].via_waypoint.map(wp => wp.location).join(", ");
+}
+ 
+ 
+function tryRouteWithMode(origin, destination, waypoints, travelMode, index, colors, fallback) {
       directionsService.route({
-        origin: from,
-        destination: to,
-        travelMode: google.maps.TravelMode.WALKING,
+        origin: origin,
+        destination: destination,
+        waypoints: waypoints,
+        travelMode: travelMode,
+        optimizeWaypoints: true,
+        provideRouteAlternatives: false
       }, (result, status) => {
         if (status === "OK") {
-          directionsRenderer.setDirections(result);
+          // Clear old renderers for this index
+          if (directionsRenderers[index]) {
+            directionsRenderers[index].setMap(null);
+          }
+
+          const routeRenderer = new google.maps.DirectionsRenderer({
+            map: map,
+            suppressMarkers: false,
+            polylineOptions: {
+              strokeColor: colors[index % colors.length],
+              strokeWeight: 6,
+              strokeOpacity: 0.8,
+            }
+          });
+          
+          routeRenderer.setDirections(result);
+          directionsRenderers[index] = routeRenderer;
+          
+          extractRoutePath(result.routes[0], index);
+          fitMapToRoutes();
+          
+        } else if (status === "ZERO_RESULTS" && fallback) {
+          // Try fallback mode if specified
+          fallback();
         } else {
-          alert("Could not load route: " + status);
+          console.error(`Directions request failed (${travelMode}):`, status);
+          showError(`Could not find ${travelMode.toLowerCase()} route between these locations`);
         }
       });
     }
+
+    function fitMapToRoutes() {
+      const bounds = new google.maps.LatLngBounds();
+      
+      directionsRenderers.forEach(renderer => {
+        if (renderer && renderer.getDirections()) {
+          const route = renderer.getDirections().routes[0];
+          route.legs.forEach(leg => {
+            bounds.extend(leg.start_location);
+            bounds.extend(leg.end_location);
+          });
+        }
+      });
+      
+      if (!bounds.isEmpty()) {
+        map.fitBounds(bounds);
+      }
+    }
+
+   function extractRoutePath(route, index) {
+  const path = [];
+  if (!route.legs || route.legs.length === 0) return path;
+  
+  for (let i = 0; i < route.legs.length; i++) {
+    const steps = route.legs[i].steps;
+    if (!steps || steps.length === 0) continue;
+    
+    for (let j = 0; j < steps.length; j++) {
+      const stepPath = steps[j].path;
+      if (!stepPath || stepPath.length === 0) continue;
+      
+      // Add all points in the path (not just sampled points)
+      for (let k = 0; k < stepPath.length; k++) {
+        const point = stepPath[k];
+        if (point && typeof point.lat === 'function') {
+          path.push({
+            lat: point.lat(),
+            lng: point.lng()
+          });
+        }
+      }
+    }
+  }
+  
+  routePaths[index] = path;
+  console.log(`Extracted ${path.length} points for route ${index}`);
+}
+   function startStreetViewTour() {
+  if (currentRouteIndex === -1 || !routePaths[currentRouteIndex]) {
+    showError("Please select a route first by clicking a route option");
+    return;
+  }
+
+  const path = routePaths[currentRouteIndex];
+  if (!path || path.length === 0) {
+    showError("No path data available for the selected route");
+    return;
+  }
+
+  // Make Street View visible
+  document.getElementById('street-view').style.display = 'block';
+  document.body.classList.add('street-view-active');
+  
+  // Stop any existing tour
+  stopStreetViewTour();
+  
+  // Filter path points to reduce density (too many points can cause issues)
+  const filteredPath = [];
+  const stepSize = Math.max(1, Math.floor(path.length / 50)); // Reduce to ~50 points
+  for (let i = 0; i < path.length; i += stepSize) {
+    filteredPath.push(path[i]);
+  }
+
+  // Update the current path with filtered points
+  routePaths[currentRouteIndex] = filteredPath;
+  
+  updateStatus("Starting Street View tour...");
+  const speed = parseInt(document.getElementById('tour-speed').value);
+  currentStep = 0;
+
+  // Start with first point
+  moveToNextStreetViewLocation();
+  
+  // Set up interval for subsequent points
+  tourInterval = setInterval(moveToNextStreetViewLocation, speed);
+}
+
+   function moveToNextStreetViewLocation() {
+  if (!routePaths[currentRouteIndex] || currentStep >= routePaths[currentRouteIndex].length) {
+    updateStatus("Tour completed");
+    stopStreetViewTour();
+    return;
+  }
+  
+  const currentPos = routePaths[currentRouteIndex][currentStep];
+  
+  svService.getPanorama({
+    location: currentPos,
+    radius: 50,
+    preference: google.maps.StreetViewPreference.BEST,
+    source: google.maps.StreetViewSource.DEFAULT
+  }, (data, status) => {
+    if (status === 'OK' && data.location && data.location.pano) {
+      // Set the panorama
+      panorama.setPano(data.location.pano);
+      panorama.setVisible(true);
+      
+      // Calculate heading for next point if available
+      if (currentStep < routePaths[currentRouteIndex].length - 1) {
+        const nextPos = routePaths[currentRouteIndex][currentStep + 1];
+        const heading = google.maps.geometry.spherical.computeHeading(
+          currentPos,
+          nextPos
+        );
+        panorama.setPov({
+          heading: heading,
+          pitch: 0,
+          zoom: 1
+        });
+      }
+      
+      updateStatus(`Following route (${currentStep + 1}/${routePaths[currentRouteIndex].length})`);
+    } else {
+      updateStatus(`No Street View at point ${currentStep + 1}, skipping...`);
+    }
+    
+    currentStep++;
+    
+    // Check if we've reached the end
+    if (currentStep >= routePaths[currentRouteIndex].length) {
+      updateStatus("Tour completed");
+      stopStreetViewTour();
+    }
+  });
+}
+    function stopStreetViewTour() {
+  if (tourInterval) {
+    clearInterval(tourInterval);
+    tourInterval = null;
+  }
+  document.body.classList.remove('street-view-active');
+  updateStatus("Tour stopped");
+  currentStep = 0;
+}
+    // Rest of your functions (addRouteToUI, focusRoute, etc.) remain the same
+    // Make sure to include them as in your original code
+
+    // Initialize the map
+    // Replace your current loadMap function with this enhanced version
+function loadMap() {
+  if (window.google && window.google.maps) {
+    initMap();
+    return;
+  }
+
+  const script = document.createElement('script');
+  script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyA0apH65c5BC72YxQOKrnXLWMfLx-6OVVg&libraries=places,geometry&callback=initMap`;
+  script.async = true;
+  script.defer = true;
+  script.onerror = () => {
+    showError("Failed to load Google Maps API");
+    console.error("Google Maps API failed to load");
+  };
+  document.head.appendChild(script);
+
+  // Add timeout check
+  setTimeout(() => {
+    if (!window.google || !window.google.maps) {
+      showError("Google Maps is taking too long to load. Please refresh.");
+    }
+  }, 5000);
+}
+    window.onload = loadMap;
   </script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA0apH65c5BC72YxQOKrnXLWMfLx-6OVVg&callback=initMap"></script>
 </body>
 </html>

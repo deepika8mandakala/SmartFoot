@@ -1,12 +1,18 @@
 from flask import Flask, render_template, jsonify,request
-from backend.db import init_db
-init_db()
+from flask_cors import CORS  # 👈 New import for CORS support
+# from backend.db import init_db
+# init_db()
+import traceback
 import json
 import os
 import pandas as pd
 import sqlite3
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
+def get_csv_path():
+    """Get absolute path to the CSV file"""
+    return os.path.join(os.path.dirname(__file__), 'data', 'safety_scores_full.csv')
 
 @app.route('/')
 def home():
@@ -81,28 +87,71 @@ def leaderboard():
 def safe_route():
     return render_template("safe-route.html")
 
+    
+    # Your existing POST handling code
 # API to get matching routes based on from & to
-@app.route("/api/get-safety-scores", methods=["POST"])
+
+@app.route("/api/get-safety-scores", methods=["POST", "GET", "OPTIONS"])
 def get_safety_scores():
+    if request.method == "OPTIONS":
+        response = jsonify({"status": "ok"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Headers", "*")
+        response.headers.add("Access-Control-Allow-Methods", "*")
+        return response
+
     try:
-        data = request.get_json()
+        data = request.get_json(force=True) if request.method == "POST" else request.args
+        print ("recieved",data) 
+
         from_loc = data.get("from", "").strip().lower()
         to_loc = data.get("to", "").strip().lower()
 
-        df = pd.read_csv("data/safety_scores_full.csv")
-        df['from_location'] = df['from_location'].str.strip().str.lower()
-        df['to_location'] = df['to_location'].str.strip().str.lower()
+        if not from_loc or not to_loc:
+            return jsonify({"error": "Missing parameters"}), 400
+        
+        return jsonify({"score":88})
+        # Load and inspect the CSV
+        csv_path = os.path.join(os.path.dirname(__file__), "data", "safety_scores_full.csv")
+        print("CSV Path:", csv_path)
+        df = pd.read_csv(csv_path, sep=",", engine='python')
 
+
+        print("CSV Loaded Successfully!")
+
+        # Ensure required columns exist
+        expected_cols = ["from_location", "to_location", "summary", "safetyScore", "waypoints"]
+        for col in expected_cols:
+            if col not in df.columns:
+                raise ValueError(f"Missing column in CSV: {col}")
+
+        # Normalize for matching
+        df['from_clean'] = df['from_location'].str.strip().str.lower()
+        df['to_clean'] = df['to_location'].str.strip().str.lower()
+
+        # Match routes
         matches = df[
-            (df['from_location'] == from_loc) &
-            (df['to_location'] == to_loc)
+            ((df['from_location'] == from_loc) & (df['to_location'] == to_loc)) |
+            ((df['from_location'] == to_loc) & (df['to_location'] == from_loc))
         ]
 
-        return jsonify(matches.to_dict(orient="records"))
+        if matches.empty:
+            return jsonify({
+                "error": "No routes found",
+                "message": f"No routes between {from_loc.title()} and {to_loc.title()}"
+            }), 404
+
+        routes = matches[["from_location", "to_location", "summary", "safetyScore", "waypoints"]].to_dict(orient="records")
+
+        return jsonify({"success": True, "routes": routes})
 
     except Exception as e:
-        print("❌ Backend Error:", e)
-        return jsonify({"error": "Server error"}), 500
+        print("Server error:", str(e))
+        traceback.print_exc()  # This will give the full error log
+        return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    os.makedirs('data', exist_ok=True)
+    app.run(debug=True, host='0.0.0.0', port=8000)
+# This will start the Flask app and make it accessible on all interfaces at port 8000
