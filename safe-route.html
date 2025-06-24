@@ -4,10 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="Permissions-Policy" content="accelerometer=(self)">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Permissions-Policy" content="accelerometer=(self)">
   <title>Safe Route Planner | SmartFoot</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
+    #street-view {
+  height: 400px;
+  width: 100%;
+  margin-top: 30px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  display: none; /* Ensure it starts hidden */
+}
+
+.street-view-active #street-view {
+  display: block; /* Show when active */
+}
     #street-view {
   height: 400px;
   width: 100%;
@@ -41,16 +57,19 @@
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
+      flex-wrap: wrap;
     }
-    .logo img {
-      height: 50px;
-      width: 50px;
-      border-radius: 50%;
-    }
+  .logo img {
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+}
     .nav-buttons a {
       color: white;
       margin-left: 20px;
       text-decoration: none;
+      font-weight: 600;
+      transition: text-decoration 0.2s ease-in-out;
       font-weight: 600;
       transition: text-decoration 0.2s ease-in-out;
     }
@@ -66,13 +85,18 @@
       width: 100%;
       max-width: 900px;
       margin: 0 auto;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
     }
     .card {
       background: white;
       padding: 20px 30px;
       border-radius: 12px;
       width: 100%;
+      width: 100%;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-sizing: border-box;
       box-sizing: border-box;
     }
     .card h2 {
@@ -80,19 +104,29 @@
       text-align: center;
       margin-bottom: 1rem;
       font-weight: 700;
+      font-weight: 700;
     }
     .input-group {
       display: flex;
       gap: 10px;
       margin-bottom: 1rem;
       flex-wrap: wrap;
+      flex-wrap: wrap;
     }
     .input-group input {
       flex: 1;
       min-width: 200px;
+      min-width: 200px;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    .input-group input:focus {
+      outline: none;
+      border-color: #43a047;
+      box-shadow: 0 0 5px #a5d6a7;
       font-size: 1rem;
       transition: border-color 0.3s;
     }
@@ -106,15 +140,24 @@
       background: #43a047;
       color: white;
       font-weight: 700;
+      font-weight: 700;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       transition: background 0.3s;
       min-width: 120px;
       flex-shrink: 0;
+      transition: background 0.3s;
+      min-width: 120px;
+      flex-shrink: 0;
     }
     .btn:hover:not(:disabled) {
+    .btn:hover:not(:disabled) {
       background: #388e3c;
+    }
+    .btn:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
     }
     .btn:disabled {
       background: #cccccc;
@@ -123,6 +166,7 @@
     #routesList {
       margin-top: 20px;
       width: 100%;
+      width: 100%;
     }
     .route-option {
       background: #e8f5e9;
@@ -130,6 +174,15 @@
       margin-bottom: 10px;
       border-radius: 8px;
       border: 1px solid #c8e6c9;
+      box-sizing: border-box;
+    }
+    .route-option h3 {
+      color: #2e7d32;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .route-option p {
+      margin: 4px 0;
       box-sizing: border-box;
     }
     .route-option h3 {
@@ -153,12 +206,38 @@
     }
     .route-option button:hover {
       background: #1b5e20;
+      transition: background 0.3s;
+      font-weight: 600;
+    }
+    .route-option button:hover {
+      background: #1b5e20;
     }
     #map {
       height: 400px;
       width: 100%;
       margin-top: 30px;
       border-radius: 12px;
+      border: 1px solid #ddd;
+      box-sizing: border-box;
+    }
+    #street-view {
+      height: 400px;
+      width: 100%;
+      margin-top: 30px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      box-sizing: border-box;
+    }
+    .street-view-controls {
+      display: flex;
+      gap: 10px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+    .street-view-controls select {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
       border: 1px solid #ddd;
       box-sizing: border-box;
     }
@@ -256,12 +335,18 @@
       <a href="home.html">Dashboard</a>
       <a href="about.html">About Us</a>
     </nav>
+    </nav>
   </header>
 
   <main>
     <section class="card" aria-label="Safe Route Finder">
       <h2><i class="fas fa-route" aria-hidden="true"></i> Safe Route Finder</h2>
+    <section class="card" aria-label="Safe Route Finder">
+      <h2><i class="fas fa-route" aria-hidden="true"></i> Safe Route Finder</h2>
       <div class="input-group">
+        <input type="text" id="from" placeholder="From Location (e.g. Siripuram)" aria-label="From Location" required />
+        <input type="text" id="to" placeholder="To Location (e.g. Beach Road)" aria-label="To Location" required />
+        <button class="btn" id="findRoutesBtn" onclick="findRoutes()">Find Routes</button>
         <input type="text" id="from" placeholder="From Location (e.g. Siripuram)" aria-label="From Location" required />
         <input type="text" id="to" placeholder="To Location (e.g. Beach Road)" aria-label="To Location" required />
         <button class="btn" id="findRoutesBtn" onclick="findRoutes()">Find Routes</button>
@@ -281,12 +366,31 @@
   </select>
 </div>
     <div id="status" class="status">Ready to calculate route</div>
+      <div id="routesList" aria-live="polite"></div>
+    </section>
+    <div id="map" role="region" aria-label="Map showing routes"></div>
+    <div id="street-view" role="region" aria-label="Street View of selected route"></div>
+   <div class="street-view-controls">
+  <button class="btn" id="start-tour" onclick="startStreetViewTour()">Start Street View Tour</button>
+  <button class="btn" id="stop-tour" onclick="stopStreetViewTour()">Stop Tour</button>
+  <span>Speed: </span>
+  <select id="tour-speed">
+    <option value="3000">Slow</option>
+    <option value="2000" selected>Normal</option>
+    <option value="1000">Fast</option>
+  </select>
+</div>
+    <div id="status" class="status">Ready to calculate route</div>
   </main>
 
   <footer>
-    <p>&copy; 2025 SmartFoot | Walk Safer. Walk Smarter.</p>
+    <p><i class="fas fa-phone"></i> Contact Info |
+    <a href="#"><i class="fab fa-facebook"></i> Social Links</a> |
+    <a href="#"><i class="fas fa-lock"></i> Privacy Policy</a> |
+    <a href="#"><i class="fas fa-file-alt"></i> Terms</a></p>
   </footer>
 
+  <script src="config.js"></script>
   <script>
     let map, directionsService;
     const directionsRenderers = [];
@@ -375,6 +479,16 @@ panorama.addListener('pano_changed', () => {
     // Show error message in routes list area
     function showError(message) {
       const routesList = document.getElementById("routesList");
+      routesList.innerHTML = `<div class="error" role="alert"><i class="fas fa-exclamation-circle" aria-hidden="true"></i> ${message}</div>`;
+    }
+
+    // Display a route on the map
+ // Enhance your displayRouteOnMap function
+function displayRouteOnMap(route, index) {
+  if (!mapLoaded) {
+    showError("Map is not loaded yet. Please try again later.");
+    return;
+  }
       routesList.innerHTML = `<div class="error" role="alert"><i class="fas fa-exclamation-circle" aria-hidden="true"></i> ${message}</div>`;
     }
 
@@ -608,7 +722,235 @@ function getWaypoints(route) {
  
  
 function tryRouteWithMode(origin, destination, waypoints, travelMode, index, colors, fallback) {
+  console.log(`Displaying route ${index}`, route); // Debug log
+
+  const colors = ["#035b16", "#1141ff", "#b209a4", "#f1d51a"];
+
+  // Clear old renderers for this index
+  if (directionsRenderers[index]) {
+    directionsRenderers[index].setMap(null);
+  }
+
+  try {
+    const routeRenderer = new google.maps.DirectionsRenderer({
+      map: map,
+      suppressMarkers: false,
+      polylineOptions: {
+        strokeColor: colors[index % colors.length],
+        strokeWeight: 6,
+        strokeOpacity: 0.8,
+      },
+      markerOptions: {
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 8,
+          fillColor: colors[index % colors.length],
+          fillOpacity: 1,
+          strokeWeight: 2,
+          strokeColor: 'white',
+        }
+      }
+    });
+
+    // Verify route data
+    if (!route.routeObject) {
+      throw new Error(`Route ${index} has no routeObject`);
+    }
+
+    // Create a complete DirectionsResult object
+    const directionsResult = {
+      routes: [route.routeObject],
+      request: {
+        origin: route.routeObject.legs[0].start_address,
+        destination: route.routeObject.legs[0].end_address,
+        travelMode: google.maps.TravelMode.WALKING
+      },
+      geocoded_waypoints: []
+    };
+
+    routeRenderer.setDirections(directionsResult);
+    directionsRenderers[index] = routeRenderer;
+    extractRoutePath(route.routeObject, index);
+    
+    // Debug log
+    console.log(`Route ${index} rendered successfully`);
+  } catch (error) {
+    console.error(`Error rendering route ${index}:`, error);
+    showError(`Failed to display route ${index + 1}`);
+  }
+}
+    // Extract path coordinates for Street View tour
+    
+    // Add route details and UI for each route option
+    function addRouteToUI(route, index) {
+  const routesList = document.getElementById("routesList");
+  const div = document.createElement("div");
+  div.className = "route-option";
+  div.innerHTML = `
+    <h3>Option ${index + 1}: ${route.summary || 'Route'}</h3>
+    <p><strong>From:</strong> ${route.from_location}</p>
+    <p><strong>To:</strong> ${route.to_location}</p>
+    <p><strong>Safety Score:</strong> ${route.safetyScore}%</p>
+    ${route.distance ? `<p><strong>Distance:</strong> ${route.distance}</p>` : ''}
+    ${route.duration ? `<p><strong>Duration:</strong> ${route.duration}</p>` : ''}
+    ${route.waypoints ? `<p><strong>Waypoints:</strong> ${route.waypoints}</p>` : ''}
+    <button type="button" onclick="focusRoute(${index})" aria-label="Focus on route option ${index + 1}">
+      <i class="fas fa-map-marker-alt"></i> Focus This Route
+    </button>
+    <button type="button" onclick="currentRouteIndex = ${index}; startStreetViewTour()" aria-label="Start Street View tour for route option ${index + 1}" style="margin-left: 10px;">
+      <i class="fas fa-street-view"></i> Street View Tour
+    </button>
+  `;
+  routesList.appendChild(div);
+}
+
+    // Focus on a particular route on the map by index
+    function focusRoute(index) {
+      directionsRenderers.forEach((renderer, i) => {
+        renderer.setMap(i === index ? map : null);
+      });
+
+      if (directionsRenderers[index]) {
+        const bounds = new google.maps.LatLngBounds();
+        const directions = directionsRenderers[index].getDirections();
+
+        directions.routes[0].legs.forEach(leg => {
+          bounds.extend(leg.start_location);
+          bounds.extend(leg.end_location);
+        });
+
+        map.fitBounds(bounds);
+      }
+    }
+
+    // Start the Street View tour for a specific route
+   
+
+   
+
+   function stopStreetViewTour() {
+  if (tourInterval) {
+    clearInterval(tourInterval);
+    tourInterval = null;
+  }
+  document.body.classList.remove('street-view-active');
+  document.getElementById('street-view').style.display = 'none';
+  updateStatus("Tour stopped");
+  currentStep = 0;
+}
+
+    function updateStatus(message) {
+      document.getElementById('status').textContent = message;
+    }
+
+    // Main function to find routes from user inputs
+async function findRoutes() {
+  try {
+    if (!isDirectionsServiceReady()) {
+      showError("Directions service is not ready. Please try again later.");
+      return;
+    }
+
+    const from = document.getElementById("from").value.trim();
+    const to = document.getElementById("to").value.trim();
+    
+    if (!from || !to) {
+      showError("Please enter both From and To locations.");
+      return;
+    }
+
+    const fromPlace = autocompleteFrom.getPlace();
+    const toPlace = autocompleteTo.getPlace();
+    
+    if (!fromPlace || !toPlace || !fromPlace.geometry || !toPlace.geometry) {
+      showError("Please select valid locations from the suggestions");
+      return;
+    }
+
+    clearRoutes();
+    document.getElementById("routesList").innerHTML = `<div class="loading-container"><div class="loading"></div><span>Finding safe routes...</span></div>`;
+    document.getElementById("findRoutesBtn").disabled = true;
+
+    const routes = await getDirections(fromPlace, toPlace);
+    
+    if (routes && routes.length > 0) {
+      document.getElementById("routesList").innerHTML = "";
+      routes.forEach((route, index) => {
+        displayRouteOnMap(route, index);
+        addRouteToUI(route, index);
+      });
+    } else {
+      showError("No routes found between these locations");
+    }
+  } catch (error) {
+    showError(error.message);
+  } finally {
+    document.getElementById("findRoutesBtn").disabled = false;
+  }
+}
+  // Enhance your getDirections function
+async function getDirections(fromPlace, toPlace) {
+  return new Promise((resolve, reject) => {
+    const request = {
+      origin: fromPlace.geometry.location,
+      destination: toPlace.geometry.location,
+      travelMode: google.maps.TravelMode.WALKING,
+      provideRouteAlternatives: true
+    };
+
+    directionsService.route(request, (response, status) => {
+      if (status === 'OK') {
+        const routes = response.routes.map((route, index) => ({
+          from_location: fromPlace.formatted_address,
+          to_location: toPlace.formatted_address,
+          summary: `Route ${index + 1}`,
+          safetyScore: calculateSafetyScore(route),
+          distance: route.legs[0].distance.text,
+          duration: route.legs[0].duration.text,
+          waypoints: getWaypoints(route),
+          routeObject: route
+        }));
+        resolve(routes);
+      } else {
+        reject(new Error('Directions request failed: ' + status));
+      }
+    });
+  });
+}
+
+// Example safety score calculation - replace with your actual logic
+function calculateSafetyScore(route) {
+  // Implement actual safety factors:
+  const factors = {
+    sidewalkCoverage: 0.4,
+    lighting: 0.3,
+    crimeData: 0.2,
+    pedestrianVolume: 0.1
+  };
+  
+  // Calculate based on actual route properties
+  let score = 0;
+  // Add real calculations here...
+  
+  return Math.min(100, Math.max(0, Math.round(score)));
+}
+// Extract waypoints from route
+function getWaypoints(route) {
+  if (!route.legs[0].via_waypoint || route.legs[0].via_waypoint.length === 0) {
+    return "None";
+  }
+  return route.legs[0].via_waypoint.map(wp => wp.location).join(", ");
+}
+ 
+ 
+function tryRouteWithMode(origin, destination, waypoints, travelMode, index, colors, fallback) {
       directionsService.route({
+        origin: origin,
+        destination: destination,
+        waypoints: waypoints,
+        travelMode: travelMode,
+        optimizeWaypoints: true,
+        provideRouteAlternatives: false
         origin: origin,
         destination: destination,
         waypoints: waypoints,
@@ -641,7 +983,33 @@ function tryRouteWithMode(origin, destination, waypoints, travelMode, index, col
         } else if (status === "ZERO_RESULTS" && fallback) {
           // Try fallback mode if specified
           fallback();
+          // Clear old renderers for this index
+          if (directionsRenderers[index]) {
+            directionsRenderers[index].setMap(null);
+          }
+
+          const routeRenderer = new google.maps.DirectionsRenderer({
+            map: map,
+            suppressMarkers: false,
+            polylineOptions: {
+              strokeColor: colors[index % colors.length],
+              strokeWeight: 6,
+              strokeOpacity: 0.8,
+            }
+          });
+          
+          routeRenderer.setDirections(result);
+          directionsRenderers[index] = routeRenderer;
+          
+          extractRoutePath(result.routes[0], index);
+          fitMapToRoutes();
+          
+        } else if (status === "ZERO_RESULTS" && fallback) {
+          // Try fallback mode if specified
+          fallback();
         } else {
+          console.error(`Directions request failed (${travelMode}):`, status);
+          showError(`Could not find ${travelMode.toLowerCase()} route between these locations`);
           console.error(`Directions request failed (${travelMode}):`, status);
           showError(`Could not find ${travelMode.toLowerCase()} route between these locations`);
         }

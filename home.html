@@ -30,10 +30,20 @@
       align-items: center;
       backdrop-filter: blur(6px);
     }
-    .logo img {
+    .logo-title {
+      display: flex;
+      align-items: center;
+    }
+    .logo-title img {
       height: 60px;
       width: 60px;
       border-radius: 50%;
+      margin-right: 15px;
+    }
+    .title {
+      font-size: 22px;
+      font-weight: 600;
+      color: white;
     }
     .nav-buttons a {
       color: white;
@@ -55,7 +65,7 @@
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid rgba(255, 255, 255, 0.25);
       border-radius: 18px;
-      padding:20px;
+      padding: 20px;
       text-align: center;
       color: #008000;
       backdrop-filter: blur(10px);
@@ -103,13 +113,14 @@
 
   <!-- Header -->
   <header>
-    <div class="logo">
+    <div class="logo-title">
       <img src="smart-foot.png" alt="SmartFoot Logo" />
+      <span class="title">SmartFoot</span>
     </div>
     <div class="nav-buttons">
-  <a href="#" onclick="location.href='login.html'">Home</a>
-  <a href="#" onclick="location.href='about.html'">About Us</a>
-</div>
+      <a href="#" onclick="location.href='login.html'">Home</a>
+      <a href="#" onclick="location.href='about.html'">About Us</a>
+    </div>
   </header>
 
   <!-- Cards Section -->
@@ -120,7 +131,7 @@
       <p>Navigate safe routes with hazard alerts and real-time area safety data.</p>
     </div>
 
-    <div class="card" onclick="location.href='templates\\walkability.html'">
+    <div class="card" onclick="location.href='templates/walkability.html'">
       <i class="fas fa-walking"></i>
       <h2>Live Walkability Scores</h2>
       <p>Check area walkability using green cover, lighting, and footpath safety.</p>
