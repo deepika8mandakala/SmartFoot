@@ -94,6 +94,93 @@
       resize: vertical;
     }
 
+    /* Image Upload Styles */
+    .image-upload-section {
+      margin-top: 15px;
+    }
+
+    .image-upload-container {
+      border: 2px dashed #ff5252;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 5px;
+    }
+
+    .image-upload-container:hover {
+      border-color: #e04444;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .image-upload-container.drag-over {
+      border-color: #4caf50;
+      background-color: rgba(76, 175, 80, 0.1);
+    }
+
+    .upload-icon {
+      font-size: 2rem;
+      color: #ff5252;
+      margin-bottom: 10px;
+    }
+
+    .upload-text {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    #imageInput {
+      display: none;
+    }
+
+    .image-preview {
+      margin-top: 15px;
+      display: none;
+    }
+
+    .preview-container {
+      position: relative;
+      display: inline-block;
+      margin: 5px;
+    }
+
+    .preview-image {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid #ff5252;
+    }
+
+    .remove-image {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background-color: #ff5252;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .remove-image:hover {
+      background-color: #e04444;
+    }
+
+    .image-info {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-top: 5px;
+    }
+
     .submit-btn {
       margin-top: 20px;
       background-color: #ff5252;
@@ -220,13 +307,30 @@
         <label for="details">Issue Description:</label>
         <textarea id="details" name="details" rows="4" placeholder="Explain the issue in brief..."></textarea>
 
+        <!-- Image Upload Section -->
+        <div class="image-upload-section">
+          <label>Upload Images (Optional):</label>
+          <div class="image-upload-container" onclick="document.getElementById('imageInput').click()">
+            <i class="fas fa-camera upload-icon"></i>
+            <div class="upload-text">
+              <strong>Click to upload</strong> or drag and drop<br>
+              <small>PNG, JPG, JPEG (Max 5MB each)</small>
+            </div>
+          </div>
+          <input type="file" id="imageInput" multiple accept="image/*" onchange="handleImageUpload(event)">
+          <div class="image-info">
+            <i class="fas fa-info-circle"></i> Adding photos helps us better understand the issue
+          </div>
+          <div id="imagePreview" class="image-preview"></div>
+        </div>
+
         <button class="submit-btn" type="submit">Submit Report</button>
       </form>
         <div id="thankYouPopup" style="display:none;" class="popup">
            <div class="popup-content">
                 <i class="fas fa-check-circle"></i>
                 <h3>Thank you for your feedback!</h3>
-                <p>We’ll use your report to improve pedestrian safety.</p>
+                <p>We'll use your report to improve pedestrian safety.</p>
                 <button onclick="closePopup()">Close</button>
             </div>
         </div>
@@ -234,15 +338,119 @@
     </div>
     </main>
     <script>
+  let uploadedImages = [];
+
   function showPopup(event) {
     event.preventDefault(); // prevent form submit
+    
+    // Here you would normally send the form data including images to your server
+    console.log('Form data:', {
+      reporter: document.getElementById('reporter').value,
+      contact: document.getElementById('contact').value,
+      issueType: document.getElementById('issueType').value,
+      location: document.getElementById('location').value,
+      details: document.getElementById('details').value,
+      images: uploadedImages
+    });
+    
     document.getElementById('thankYouPopup').style.display = 'flex';
   }
 
   function closePopup() {
     document.getElementById('thankYouPopup').style.display = 'none';
-    document.querySelector('form').reset(); // Reset the form
+    document.querySelector('form').reset();
+    uploadedImages = [];
+    document.getElementById('imagePreview').innerHTML = '';
+    document.getElementById('imagePreview').style.display = 'none';
   }
+
+  function handleImageUpload(event) {
+    const files = event.target.files;
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    
+    for (let file of files) {
+      if (file.size > maxSize) {
+        alert(`File "${file.name}" is too large. Maximum size is 5MB.`);
+        continue;
+      }
+      
+      if (!file.type.startsWith('image/')) {
+        alert(`File "${file.name}" is not a valid image.`);
+        continue;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imageData = {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          data: e.target.result
+        };
+        
+        uploadedImages.push(imageData);
+        displayImagePreview(imageData, uploadedImages.length - 1);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function displayImagePreview(imageData, index) {
+    const previewContainer = document.getElementById('imagePreview');
+    previewContainer.style.display = 'block';
+    
+    const previewDiv = document.createElement('div');
+    previewDiv.className = 'preview-container';
+    previewDiv.innerHTML = `
+      <img src="${imageData.data}" alt="${imageData.name}" class="preview-image">
+      <button type="button" class="remove-image" onclick="removeImage(${index})">
+        <i class="fas fa-times"></i>
+      </button>
+    `;
+    
+    previewContainer.appendChild(previewDiv);
+  }
+
+  function removeImage(index) {
+    uploadedImages.splice(index, 1);
+    refreshImagePreview();
+  }
+
+  function refreshImagePreview() {
+    const previewContainer = document.getElementById('imagePreview');
+    previewContainer.innerHTML = '';
+    
+    if (uploadedImages.length === 0) {
+      previewContainer.style.display = 'none';
+      return;
+    }
+    
+    uploadedImages.forEach((imageData, index) => {
+      displayImagePreview(imageData, index);
+    });
+  }
+
+  // Drag and drop functionality
+  const uploadContainer = document.querySelector('.image-upload-container');
+  
+  uploadContainer.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadContainer.classList.add('drag-over');
+  });
+  
+  uploadContainer.addEventListener('dragleave', () => {
+    uploadContainer.classList.remove('drag-over');
+  });
+  
+  uploadContainer.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadContainer.classList.remove('drag-over');
+    
+    const files = e.dataTransfer.files;
+    const input = document.getElementById('imageInput');
+    input.files = files;
+    handleImageUpload({target: input});
+  });
 </script>
 
 

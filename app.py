@@ -48,7 +48,7 @@ def walkability_data():
     lat = request.args.get('lat', type=float)
     lng = request.args.get('lng', type=float)
 
-    # 🔧 Replace this mock data with real analysis later
+# Mock data for walkability scores
     mock_scores = {
         "sidewalk": 72,
         "greenery": 85,

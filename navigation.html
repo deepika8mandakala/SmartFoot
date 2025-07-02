@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartFoot</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    #refreshLocation.refreshing i {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+    body {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #f5f5f5;
+    }
+    
+    .header {
+      background: #2e7d32;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+    
+    #map {
+      flex: 1;
+      width: 100%;
+    }
+
+    #gps-status {
+      position: absolute;
+      top: 80px;
+      right: 15px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      z-index: 100;
+    }
+
+    #gps-status.connected {
+      background: rgba(46, 125, 50, 0.9);
+    }
+
+    #gps-status.error {
+      background: rgba(211, 47, 47, 0.9);
+    }
+    
+    .controls {
+      background: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    }
+    header {
+  background: rgba(34, 87, 49, 0.9);
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+ .logo-title {
+  display: flex;
+  align-items: center;
+}
+.logo-title img {
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+.sos-btn {
+  background-color: red;
+  color: rgb(241, 10, 10);
+  font-weight: bold;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.6); }
+  70% { box-shadow: 0 0 0 10px #ea0303e1; }
+  100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  color: white;
+}
+    
+    .btn {
+      padding: 10px 15px;
+      background: #43a047;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    
+    .instruction-panel {
+      position: absolute;
+      bottom: 80px;
+      left: 15px;
+      right: 15px;
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 100;
+    }
+    
+    .current-step {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    .next-step {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+    }
+    
+    
+    .distance {
+      font-size: 0.9rem;
+      color: #2e7d32;
+      margin-top: 5px;
+    }
+    
+    .progress-container {
+      height: 4px;
+      background: #e0e0e0;
+      margin-top: 10px;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background: #43a047;
+      width: 0%;
+      transition: width 0.3s;
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="logo-title">
+    <img src="smart-foot.png" alt="SmartFoot Logo" />
+    <span class="title">SmartFoot</span>
+  </div>
+
+  <div class="button-group">
+    <button class="btn sos-btn" id="sosBtn">
+      <i class="fas fa-exclamation-triangle"></i> SOS
+    </button>
+    <button class="btn" id="endBtn">
+      <i class="fas fa-times"></i> End
+    </button>
+  </div>
+</div>
+
+  
+  <div id="map"></div>
+  <div id="gps-status">GPS: Connecting...</div>
+  <button class="btn" id="refreshLocation">
+  <i class="fas fa-sync-alt"></i> Refresh Location
+</button>
+  
+  <div class="instruction-panel">
+    <div class="current-step" id="currentStep">Starting navigation...</div>
+    <div class="distance" id="currentDistance"></div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="next-step" id="nextStep"></div>
+  </div>
+ 
+  <script src="navigation.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBEDZYrAqbXLIMh4z-HsyI9YyRI0QRAj3Q&libraries=geometry&callback=initMap"></script>
+</body>
+</html>
