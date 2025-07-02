@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartFoot - Walkability & Safety Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f3f6f3 0%, #1cdf67 100%);
+            color: #333;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        header {
+            background: #2e7d32;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo img {
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-buttons a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-buttons a:hover {
+            color: #c8facc;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 100px;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+            flex: 2;
+        }
+
+        .map-section {
+            background: rgba(7, 163, 46, 0.95);
+            border-radius: 20px;
+            max-height: 700px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .analysis-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .panel-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .panel-header h2 {
+            color:#035b16 ;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .overall-score {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            position: relative;
+            background: conic-gradient(from 0deg, #4CAF50 0deg, #4CAF50 var(--score-angle), #e0e0e0 var(--score-angle), #e0e0e0 360deg);
+        }
+
+        .score-inner {
+            width: 90px;
+            height: 90px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .score-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .score-label {
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .factors-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .factor-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 1rem;
+            border-left: 5px solid;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .factor-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .factor-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .factor-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .factor-score {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .factor-bar {
+            height: 8px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .factor-progress {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease;
+            background: linear-gradient(90deg, var(--color-start), var(--color-end));
+        }
+
+        .factor-description {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .controls {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer; 
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: rgba(113, 234, 102, 0.1);
+            color:#0d0f0d;
+            border: 2px solid #f8faf9;
+            color: rgb(9, 9, 9);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(8, 8, 8, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(113, 234, 102, 0.1);
+            color:#0d0f0d;
+            border: 2px solid #f8faf9;
+        }
+
+        .btn-secondary:hover {
+            background:#035b16;
+            color: white;
+        }
+
+        .status {
+            text-align: center;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .status.loading {
+            background: rgba(255, 193, 7, 0.1);
+            color: #fcfbf9;
+        }
+
+        .status.success {
+            background: rgba(76, 175, 80, 0.1);
+            color: #fefffe;
+        }
+
+        .status.error {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f1f0f0;
+        }
+
+        .legend {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+        }
+
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        /* Footer Styles */
+        footer {
+            background: #2e7d32;
+            color: white;
+            padding: 30px 15px 15px;
+            margin-top: auto;
+            justify-content: center;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content:center;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 30px;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .footer-section a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+            transition: color 0.3s;
+        }
+
+        .footer-section a:hover {
+            color: #c8facc;
+        }
+
+        .footer-section a i {
+            margin-right: 8px;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+        }
+
+        /* Color classes for different factors */
+        .traffic { border-left-color: #f44336; }
+        .greenery { border-left-color: #4caf50; }
+        .footpath { border-left-color: #2196f3; }
+        .air-quality { border-left-color: #00bcd4; }
+        .lighting { border-left-color: #ff9800; }
+        .landmarks { border-left-color: #9c27b0; }
+        .noise { border-left-color: #795548; }
+        .crowd { border-left-color: #607d8b; }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .nav-buttons {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 10px 20px;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 20px;
+                justify-content:center;
+            }
+            
+            .footer-section {
+                text-align: center;
+                justify-content:center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <img src="smart-foot.png" alt="SmartFoot logo featuring a stylized green footprint with the word SmartFoot in bold modern font, set against a clean white background suggesting innovation and environmental friendliness">
+            <h1>SmartFoot</h1>
+        </div>
+        <div class="nav-buttons">
+            <a href="login.html"> Home</a>
+            <a href="home.html">Dashboard</a>
+            <a href="about.html">About us</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="map-section">
+            <div id="status" class="status loading">
+                📍 Getting your location...
+            </div>
+            <div id="map"></div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="refreshAnalysis()">🔄 Refresh Analysis</button>
+                <button class="btn btn-primary" onclick="shareLocation()">📤 Share Location</button>
+            </div>
+        </div>
+
+        <div class="analysis-panel">
+            <div class="panel-header">
+                <h2>Safety & Walkability Score</h2>
+                <p style="color: #666; font-size: 0.9rem;">Real-time analysis of your location</p>
+            </div>
+
+            <div class="overall-score">
+                <div class="score-circle" id="overallScore" style="--score-angle: 0deg;">
+                    <div class="score-inner">
+                        <div class="score-value" id="scoreValue">--</div>
+                        <div class="score-label">Overall</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="factors-grid" id="factorsGrid">
+                <!-- Factors will be dynamically populated -->
+            </div>
+
+            <div class="legend">
+                <div class="legend-title">Score Legend</div>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4caf50;"></div>
+                        <span>80-100: Excellent</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #8bc34a;"></div>
+                        <span>60-79: Good</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffc107;"></div>
+                        <span>40-59: Fair</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ff5722;"></div>
+                        <span>0-39: Poor</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+<footer>
+    <div class="footer-content">
+  <p><i class="fas fa-phone"></i> Contact Info |
+  <i class="fab fa-facebook"></i> Social Links</a> |
+  <i class="fas fa-lock"></i> Privacy Policy</a> |
+  <i class="fas fa-file-alt"></i> Terms</a></p>
+    </div>
+</footer>
+
+    <script>
+        let map, userLocation, markers = [];
+        
+        // Sample safety factors with realistic scoring
+        const safetyFactors = [
+            {
+                name: "Traffic Safety",
+                key: "traffic",
+                description: "Vehicle density and crossing safety",
+                baseScore: 65,
+                variation: 20
+            },
+            {
+                name: "Green Spaces",
+                key: "greenery", 
+                description: "Parks, trees, and natural areas",
+                baseScore: 72,
+                variation: 25
+            },
+            {
+                name: "Footpath Quality",
+                key: "footpath",
+                description: "Sidewalk condition and accessibility",
+                baseScore: 58,
+                variation: 30
+            },
+            {
+                name: "Air Quality",
+                key: "air-quality",
+                description: "Pollution levels and air cleanliness",
+                baseScore: 68,
+                variation: 15
+            },
+            {
+                name: "Street Lighting",
+                key: "lighting",
+                description: "Visibility and safety at night",
+                baseScore: 75,
+                variation: 20
+            },
+            {
+                name: "Safe Landmarks",
+                key: "landmarks",
+                description: "Police stations, hospitals, schools",
+                baseScore: 80,
+                variation: 15
+            },
+            {
+                name: "Noise Levels",
+                key: "noise",
+                description: "Sound pollution and quietness",
+                baseScore: 62,
+                variation: 25
+            },
+            {
+                name: "Crowd Density",
+                key: "crowd",
+                description: "Pedestrian traffic and congestion",
+                baseScore: 70,
+                variation: 20
+            }
+        ];
+
+        function getScoreColor(score) {
+            if (score >= 80) return ['#4caf50', '#66bb6a'];
+            if (score >= 60) return ['#8bc34a', '#aed581'];
+            if (score >= 40) return ['#ffc107', '#ffca28'];
+            return ['#ff5722', '#ff7043'];
+        }
+
+        function calculateDynamicScore(factor, lat, lng) {
+            // Simulate realistic scoring based on location
+            const locationVariation = Math.sin(lat * lng * 1000) * factor.variation;
+            const timeVariation = Math.sin(Date.now() / 100000) * 10;
+            const randomVariation = (Math.random() - 0.5) * 10;
+            
+            let score = factor.baseScore + locationVariation + timeVariation + randomVariation;
+            return Math.max(0, Math.min(100, Math.round(score)));
+        }
+
+        function updateFactorsDisplay(lat, lng) {
+            const factorsGrid = document.getElementById('factorsGrid');
+            factorsGrid.innerHTML = '';
+            
+            let totalScore = 0;
+            
+            safetyFactors.forEach(factor => {
+                const score = calculateDynamicScore(factor, lat, lng);
+                totalScore += score;
+                
+                const [colorStart, colorEnd] = getScoreColor(score);
+                
+                const factorDiv = document.createElement('div');
+                factorDiv.className = `factor-item ${factor.key}`;
+                factorDiv.innerHTML = `
+                    <div class="factor-header">
+                        <div class="factor-name">${factor.name}</div>
+                        <div class="factor-score" style="color: ${colorStart};">${score}%</div>
+                    </div>
+                    <div class="factor-bar">
+                        <div class="factor-progress" style="width: ${score}%; --color-start: ${colorStart}; --color-end: ${colorEnd};"></div>
+                    </div>
+                    <div class="factor-description">${factor.description}</div>
+                `;
+                factorsGrid.appendChild(factorDiv);
+            });
+            
+            // Update overall score
+            const overallScore = Math.round(totalScore / safetyFactors.length);
+            updateOverallScore(overallScore);
+        }
+
+        function updateOverallScore(score) {
+            const scoreElement = document.getElementById('scoreValue');
+            const circleElement = document.getElementById('overallScore');
+            
+            scoreElement.textContent = score;
+            
+            const angle = (score / 100) * 360;
+            circleElement.style.setProperty('--score-angle', `${angle}deg`);
+            
+            // Update circle color based on score
+            const [colorStart] = getScoreColor(score);
+            circleElement.style.background = `conic-gradient(from 0deg, ${colorStart} 0deg, ${colorStart} ${angle}deg, #e0e0e0 ${angle}deg, #e0e0e0 360deg)`;
+        }
+
+        function updateStatus(message, type = 'loading') {
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = message;
+            statusElement.className = `status ${type}`;
+        }
+
+        function addSafetyMarkers(lat, lng) {
+            // Clear existing markers
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+            
+            // Add sample safety landmarks
+            const landmarks = [
+                { lat: lat + 0.002, lng: lng + 0.002, type: 'police', title: 'Police Station' },
+                { lat: lat - 0.001, lng: lng + 0.003, type: 'hospital', title: 'Medical Center' },
+                { lat: lat + 0.001, lng: lng - 0.002, type: 'school', title: 'School Zone' },
+                { lat: lat - 0.002, lng: lng - 0.001, type: 'park', title: 'Public Park' }
+            ];
+            
+            const icons = {
+                police: '🚓',
+                hospital: '🏥',
+                school: '🏫',
+                park: '🌳'
+            };
+            
+            landmarks.forEach(landmark => {
+                const marker = new google.maps.Marker({
+                    position: { lat: landmark.lat, lng: landmark.lng },
+                    map: map,
+                    title: landmark.title,
+                    icon: {
+                        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
+                            '<svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">' +
+                                '<circle cx="15" cy="15" r="12" fill="white" stroke="#667eea" stroke-width="2"/>' +
+                                '<text x="15" y="19" text-anchor="middle" font-size="12">' + icons[landmark.type] + '</text>' +
+                            '</svg>'
+                        ),
+                        scaledSize: new google.maps.Size(30, 30)
+                    }
+                });
+                markers.push(marker);
+            });
+        }
+
+        function refreshAnalysis() {
+            if (userLocation) {
+                updateStatus(' Refreshing analysis...', 'loading');
+                setTimeout(() => {
+                    updateFactorsDisplay(userLocation.lat, userLocation.lng);
+                    updateStatus('Analysis updated successfully!', 'success');
+                    setTimeout(() => {
+                        document.getElementById('status').style.display = 'none';
+                    }, 2000);
+                }, 1000);
+            }
+        }
+
+        function shareLocation() {
+            if (userLocation && navigator.share) {
+                navigator.share({
+                    title: 'My Walkability Score',
+                    text: 'Check out my location\'s walkability analysis!',
+                    url: `https://maps.google.com/?q=${userLocation.lat},${userLocation.lng}`
+                });
+            } else if (userLocation) {
+                const url = `https://maps.google.com/?q=${userLocation.lat},${userLocation.lng}`;
+                navigator.clipboard.writeText(url).then(() => {
+                    updateStatus('📋 Location link copied to clipboard!', 'success');
+                    setTimeout(() => {
+                        document.getElementById('status').style.display = 'none';
+                    }, 2000);
+                });
+            }
+        }
+
+        function initMap() {
+            // Default location (New York City)
+            const defaultLocation = { lat: 40.7128, lng: -74.0060 };
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        setupMap(userLocation);
+                        updateStatus('✅ Location found! Analyzing walkability...', 'success');
+                        updateFactorsDisplay(userLocation.lat, userLocation.lng);
+                        addSafetyMarkers(userLocation.lat, userLocation.lng);
+                        
+                        setTimeout(() => {
+                            document.getElementById('status').style.display = 'none';
+                        }, 3000);
+                    },
+                    (error) => {
+                        console.error('Geolocation error:', error);
+                        userLocation = defaultLocation;
+                        setupMap(userLocation);
+                        updateStatus('⚠️ Using default location. Enable location access for better results.', 'error');
+                        updateFactorsDisplay(userLocation.lat, userLocation.lng);
+                        addSafetyMarkers(userLocation.lat, userLocation.lng);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 300000
+                    }
+                );
+            } else {
+                userLocation = defaultLocation;
+                setupMap(userLocation);
+                updateStatus('⚠️ Geolocation not supported. Using default location.', 'error');
+                updateFactorsDisplay(userLocation.lat, userLocation.lng);
+                addSafetyMarkers(userLocation.lat, userLocation.lng);
+            }
+        }
+
+        function setupMap(location) {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: location,
+                zoom: 16,
+                mapTypeId: 'roadmap',
+                styles: [
+                    {
+                        featureType: 'all',
+                        elementType: 'geometry',
+                        stylers: [{ color: '#f5f5f5' }]
+                    },
+                    {
+                        featureType: 'water',
+                        elementType: 'geometry',
+                        stylers: [{ color: '#c9c9c9' }]
+                    },
+                    {
+                        featureType: 'road',
+                        elementType: 'geometry',
+                        stylers: [{ color: '#ffffff' }]
+                    }
+                ]
+            });
+
+            // Add user location marker
+            new google.maps.Marker({
+                position: location,
+                map: map,
+                title: "Your Location",
+                icon: {
+                    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                        <svg width="30" height="30" viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="15" cy="15" r="12" fill="" stroke="white" stroke-width="3"/>
+                            <circle cx="15" cy="15" r="6" fill="white"/>
+                        </svg>
+                    `),
+                    scaledSize: new google.maps.Size(30, 30)
+                }
+            });
+
+            // Add click event to analyze new locations
+            map.addListener('click', (event) => {
+                const newLocation = {
+                    lat: event.latLng.lat(),
+                    lng: event.latLng.lng()
+                };
+                
+                // Add temporary marker
+                const tempMarker = new google.maps.Marker({
+                    position: newLocation,
+                    map: map,
+                    title: "Analysis Point",
+                    icon: {
+                        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                            <svg width="25" height="25" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12.5" cy="12.5" r="10" fill="#ff5722" stroke="white" stroke-width="2"/>
+                                <text x="12.5" y="17" text-anchor="middle" font-size="12" fill="white">📍</text>
+                            </svg>
+                        `),
+                        scaledSize: new google.maps.Size(25, 25)
+                    }
+                });
+                
+                updateStatus('🔍 Analyzing new location...', 'loading');
+                updateFactorsDisplay(newLocation.lat, newLocation.lng);
+                
+                setTimeout(() => {
+                    updateStatus('✅ Analysis complete!', 'success');
+                    setTimeout(() => {
+                        document.getElementById('status').style.display = 'none';
+                    }, 2000);
+                }, 1000);
+                
+                // Remove temporary marker after 5 seconds
+                setTimeout(() => {
+                    tempMarker.setMap(null);
+                }, 5000);
+            });
+        }
+
+        // Initialize map when page loads
+        window.onload = initMap;
+    </script>
+    <!-- Replace with your Google Maps API key -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBEDZYrAqbXLIMh4z-HsyI9YyRI0QRAj3Q&callback=_mapInitCallback"></script>
+</body>
+</html>
