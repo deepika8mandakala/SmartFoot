@@ -1,0 +1,4 @@
+sidewalk_width,pavement_quality,green_cover,traffic_density,noise_level,air_quality_index,lighting_quality,crime_rate,walkability_score
+2.5,8,35,120,70,80,9,3,82
+1.2,5,10,250,85,120,5,8,55
+3.0,9,50,100,65,60,10,2,90

@@ -106,3 +106,13 @@ def get_safety_scores():
 
 if __name__ == '__main__':
     app.run(debug=True)
+from fastapi import FastAPI, Request
+from predict_walkability import predict_walkability
+
+app = FastAPI()
+
+@app.post("/predict")
+async def get_walkability(request: Request):
+    data = await request.json()
+    score = predict_walkability(data)
+    return {"walkability_score": score}
