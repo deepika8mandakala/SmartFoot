@@ -1,8 +1,8 @@
-from flask import Flask, render_template, jsonify,request
+import os
+from flask import Flask, render_template, jsonify, request, send_from_directory
 from backend.db import init_db
 init_db()
 import json
-import os
 import pandas as pd
 import sqlite3
 
@@ -11,7 +11,11 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     print("Home route triggered")
-    return render_template('walkability.html')
+    return send_from_directory(os.path.dirname(os.path.abspath(__file__)), 'walkability.html')
+
+@app.route('/home.html')
+def home_dashboard():
+    return send_from_directory(os.path.dirname(os.path.abspath(__file__)), 'home.html')
 
 @app.route('/api/scores')
 def get_scores():
@@ -21,18 +25,18 @@ def get_scores():
 @app.route('/update_location', methods=['POST'])
 def update_location():
     data = request.get_json()
-    lat = data['lat']
-    lng = data['lng']
+    lat = float(data['lat'])
+    lng = float(data['lng'])
     print(f"User location received: {lat}, {lng}")
-
-    # Later: Replace with real score logic
-    score = {
-        "sidewalk": 70,
-        "greenery": 60,
-        "air": 80,
-        "safety": 65
-    }
-    return jsonify(score)
+    from predict_walkability import predict_bundle
+    bundle = predict_bundle(lat, lng)
+    return jsonify({
+        "sidewalk": bundle['factors'][2]['score'],
+        "greenery": bundle['factors'][1]['score'],
+        "air": bundle['factors'][3]['score'],
+        "safety": bundle['factors'][5]['score'],
+        "overall": bundle['overall'],
+    })
 @app.route('/submit-feedback', methods=['POST'])
 def submit_feedback():
     name = request.form.get("name")
@@ -44,21 +48,41 @@ def submit_feedback():
     return "<script>alert('Thank you for your feedback!'); window.location.href='/feedback';</script>"
 @app.route('/api/walkability-data')
 def walkability_data():
-    # Get latitude and longitude from the request
     lat = request.args.get('lat', type=float)
     lng = request.args.get('lng', type=float)
+    if lat is None or lng is None:
+        return jsonify({"error": "lat and lng query params required"}), 400
+    from predict_walkability import predict_bundle
+    bundle = predict_bundle(lat, lng)
+    f = {x['key']: x['score'] for x in bundle['factors']}
+    print(f"Walkability API: lat={lat}, lng={lng}, overall={bundle['overall']}")
+    return jsonify({
+        "sidewalk": f['footpath'],
+        "greenery": f['greenery'],
+        "lighting": f['lighting'],
+        "air": f['air-quality'],
+        "safety": f['landmarks'],
+        "overall": bundle['overall'],
+    })
 
-# Mock data for walkability scores
-    mock_scores = {
-        "sidewalk": 72,
-        "greenery": 85,
-        "lighting": 65,
-        "air": 78,
-        "safety": 90
-    }
 
-    print(f"Received coordinates: lat={lat}, lng={lng}")
-    return jsonify(mock_scores)
+@app.route('/api/predict-walkability', methods=['POST'])
+def api_predict_walkability():
+    """Full map UI: XGBoost overall score + factor breakdown."""
+    try:
+        data = request.get_json(silent=True) or {}
+        lat = float(data.get('lat'))
+        lng = float(data.get('lng'))
+    except (TypeError, ValueError):
+        return jsonify({"error": "JSON body must include numeric lat and lng"}), 400
+    try:
+        from predict_walkability import predict_bundle
+        return jsonify(predict_bundle(lat, lng))
+    except FileNotFoundError as e:
+        return jsonify({"error": str(e)}), 503
+    except Exception as e:
+        print("predict-walkability error:", e)
+        return jsonify({"error": "Prediction failed"}), 500
 
 @app.route("/admin")
 def admin():
@@ -106,13 +130,3 @@ def get_safety_scores():
 
 if __name__ == '__main__':
     app.run(debug=True)
-from fastapi import FastAPI, Request
-from predict_walkability import predict_walkability
-
-app = FastAPI()
-
-@app.post("/predict")
-async def get_walkability(request: Request):
-    data = await request.json()
-    score = predict_walkability(data)
-    return {"walkability_score": score}
